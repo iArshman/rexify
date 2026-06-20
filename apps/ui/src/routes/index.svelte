@@ -46,6 +46,13 @@
 
 	let numberOfGetStatus = 0;
 	let status: any = {};
+	// Seed the status map with the server-side cached statuses so the dashboard
+	// renders instantly instead of waiting for live Docker checks on load.
+	for (const resource of [...applications, ...services, ...databases]) {
+		if (resource?.cachedStatus) {
+			status[resource.id] = resource.cachedStatus;
+		}
+	}
 	let showOtherTeams = false;
 	let noInitialStatus: any = {
 		applications: false,
@@ -154,6 +161,9 @@
 
 	async function getStatus(resources: any, force: boolean = false) {
 		const { id, buildPack, dualCerts, type, simpleDockerfile } = resources;
+		// Cached status (seeded from the server) renders instantly without a
+		// live Docker check, even when there are more than 10 resources.
+		if (status[id] && !force) return status[id];
 		if (buildPack && applications.length + filtered.otherApplications.length > 10 && !force) {
 			noInitialStatus.applications = true;
 			return;
@@ -166,7 +176,6 @@
 			noInitialStatus.databases = true;
 			return;
 		}
-		if (status[id] && !force) return status[id];
 		while (numberOfGetStatus > 1) {
 			await asyncSleep(getRndInteger(100, 500));
 		}

@@ -15,6 +15,7 @@ import {
 	executeCommand
 } from '../../../lib/common';
 import { scheduler } from '../../../lib/scheduler';
+import { getAllCachedStatuses } from '../../../lib/statusCache';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { Login, Update } from '.';
 import type { GetCurrentUser } from './types';
@@ -242,6 +243,18 @@ export async function showDashboard(request: FastifyRequest) {
 			if (!database.version) {
 				foundUnconfiguredDatabase = true;
 			}
+		}
+		// Attach the cached container status (computed by the background job) so
+		// the dashboard can render it instantly without a live Docker check.
+		const cachedStatuses = getAllCachedStatuses();
+		for (const application of applications) {
+			(application as any).cachedStatus = cachedStatuses[application.id] || null;
+		}
+		for (const service of services) {
+			(service as any).cachedStatus = cachedStatuses[service.id] || null;
+		}
+		for (const database of databases) {
+			(database as any).cachedStatus = cachedStatuses[database.id] || null;
 		}
 		return {
 			foundUnconfiguredApplication,
