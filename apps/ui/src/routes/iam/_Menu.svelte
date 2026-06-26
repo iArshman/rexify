@@ -3,7 +3,7 @@
 	import { page } from '$app/stores';
 </script>
 
-<ul class="menu border bg-coolgray-100 border-coolgray-200 rounded p-2 space-y-2 sticky top-4">
+<ul class="menu border bg-coolgray-100 border-coolgray-200 rounded p-2 space-y-2 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
 	{#if $appSession.pendingInvitations.length > 0}
 		<li class="menu-title">
 			<span>IAM</span>

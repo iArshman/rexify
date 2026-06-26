@@ -179,11 +179,11 @@
 							<img src={$appSession.whiteLabeledDetails.icon} alt="White labeled logo" />
 						</div>
 					{/if}
-					<div class="flex flex-col space-y-2 py-2" class:mt-2={$appSession.whiteLabeled}>
+					<div class="flex flex-col space-y-4 py-2" class:mt-2={$appSession.whiteLabeled}>
 						<a
 							id="dashboard"
 							href="/"
-							class="icons hover:text-pink-500"
+							class="icons hover:text-pink-500 flex flex-col items-center gap-1"
 							class:text-pink-500={$page.url.pathname === '/'}
 							class:bg-coolgray-500={$page.url.pathname === '/'}
 							class:bg-coolgray-200={!($page.url.pathname === '/')}
@@ -204,16 +204,17 @@
 								/>
 								<path d="M16 15c-2.21 1.333 -5.792 1.333 -8 0" />
 							</svg>
+							<span class="text-xs">Dashboard</span>
 						</a>
 						{#if $appSession.teamId === '0'}
-							<a
-								id="servers"
-								href="/servers"
-								class="icons hover:text-sky-500"
-								class:text-sky-500={$page.url.pathname === '/servers'}
-								class:bg-coolgray-500={$page.url.pathname === '/servers'}
-								class:bg-coolgray-200={!($page.url.pathname === '/servers')}
-							>
+								<a
+									id="servers"
+									href="/servers"
+									class="icons hover:text-sky-500 flex flex-col items-center gap-1"
+									class:text-sky-500={$page.url.pathname === '/servers'}
+									class:bg-coolgray-500={$page.url.pathname === '/servers'}
+									class:bg-coolgray-200={!($page.url.pathname === '/servers')}
+								>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									class="w-8 h-8 mx-auto"
@@ -230,11 +231,13 @@
 									<line x1="7" y1="8" x2="7" y2="8.01" />
 									<line x1="7" y1="16" x2="7" y2="16.01" />
 								</svg>
+								<span class="text-xs">Servers</span>
 							</a>
 						{/if}
 						<a
 							id="sources"
 							href="/sources"
+							class="icons hover:text-sources flex flex-col items-center gap-1"
 								class="icons hover:text-sources"
 								class:text-sources={$page.url.pathname.startsWith('/sources')}
 								class:bg-coolgray-500={$page.url.pathname.startsWith('/sources')}
@@ -256,13 +259,14 @@
 									<path d="M11 6h5a2 2 0 0 1 2 2v8" />
 									<polyline points="14 9 11 6 14 3" />
 									<path d="M13 18h-5a2 2 0 0 1 -2 -2v-8" />
-									<polyline points="10 15 13 18 10 21" />
-								</svg>
-							</a>
-							<a
-								id="destinations"
-								href="/destinations"
-								class="icons hover:text-destinations"
+								<polyline points="10 15 13 18 10 21" />
+							</svg>
+							<span class="text-xs">Sources</span>
+						</a>
+						<a
+							id="destinations"
+							href="/destinations"
+							class="icons hover:text-destinations flex flex-col items-center gap-1"
 								class:text-destinations={$page.url.pathname.startsWith('/destinations')}
 								class:bg-coolgray-500={$page.url.pathname.startsWith('/destinations')}
 								class:bg-coolgray-200={!$page.url.pathname.startsWith('/destinations')}
@@ -290,6 +294,7 @@
 									<path d="M4.571 18c1.5 0 2.047 -.074 2.958 -.78" />
 									<line x1="10" y1="16" x2="10" y2="16.01" />
 								</svg>
+								<span class="text-xs">Destinations</span>
 							</a>
 					</div>
 					<div class="flex-1" />
