@@ -6,7 +6,19 @@
 	import ServiceLinks from './_ServiceLinks.svelte';
 </script>
 
-<ul class="menu border bg-coolgray-100 border-coolgray-200 rounded p-2 space-y-2 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+<style>
+	:global(.menu) {
+		@apply transition-none;
+	}
+	:global(.menu a) {
+		@apply transition-none;
+	}
+	:global(.menu li) {
+		@apply transition-none;
+	}
+</style>
+
+<ul class="menu border bg-coolgray-100 border-coolgray-200 rounded p-2 space-y-2 sticky top-4 max-h-[calc(100vh-8rem)] overflow-y-auto w-full">
 	<li class="menu-title">
 		<span>General</span>
 	</li>
