@@ -3,19 +3,7 @@
 	import { page } from '$app/stores';
 </script>
 
-<style>
-	ul {
-		display: flex;
-		flex-direction: column;
-		overflow-y: auto;
-		overflow-x: hidden;
-	}
-	ul :global(a) {
-		transition: none;
-	}
-</style>
-
-<ul class="menu border bg-coolgray-100 border-coolgray-200 rounded p-2 space-y-2 sticky top-4 max-h-[calc(100vh-8rem)] w-full">
+<ul class="menu border bg-coolgray-100 border-coolgray-200 rounded p-2 space-y-2 sticky top-4">
 	{#if $appSession.pendingInvitations.length > 0}
 		<li class="menu-title">
 			<span>IAM</span>

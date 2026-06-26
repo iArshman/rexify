@@ -179,18 +179,18 @@
 							<img src={$appSession.whiteLabeledDetails.icon} alt="White labeled logo" />
 						</div>
 					{/if}
-						<div class="flex flex-col space-y-1 py-2 w-full" class:mt-2={$appSession.whiteLabeled}>
+					<div class="flex flex-col space-y-2 py-2" class:mt-2={$appSession.whiteLabeled}>
 						<a
 							id="dashboard"
 							href="/"
-							class="icons hover:text-pink-500 flex flex-col items-center justify-center w-full px-1 py-2"
+							class="icons hover:text-pink-500"
 							class:text-pink-500={$page.url.pathname === '/'}
 							class:bg-coolgray-500={$page.url.pathname === '/'}
 							class:bg-coolgray-200={!($page.url.pathname === '/')}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6 flex-shrink-0"
+								class="h-9 w-9"
 								viewBox="0 0 24 24"
 								stroke-width="1.5"
 								stroke="currentColor"
@@ -204,20 +204,19 @@
 								/>
 								<path d="M16 15c-2.21 1.333 -5.792 1.333 -8 0" />
 							</svg>
-							<span style="font-size:9px;line-height:1.2;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Home</span>
 						</a>
 						{#if $appSession.teamId === '0'}
 							<a
 								id="servers"
 								href="/servers"
-								class="icons hover:text-sky-500 flex flex-col items-center justify-center w-full px-1 py-2"
+								class="icons hover:text-sky-500"
 								class:text-sky-500={$page.url.pathname === '/servers'}
 								class:bg-coolgray-500={$page.url.pathname === '/servers'}
 								class:bg-coolgray-200={!($page.url.pathname === '/servers')}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
-									class="h-6 w-6 flex-shrink-0"
+									class="w-8 h-8 mx-auto"
 									viewBox="0 0 24 24"
 									stroke-width="1.5"
 									stroke="currentColor"
@@ -231,70 +230,67 @@
 									<line x1="7" y1="8" x2="7" y2="8.01" />
 									<line x1="7" y1="16" x2="7" y2="16.01" />
 								</svg>
-								<span style="font-size:9px;line-height:1.2;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Servers</span>
 							</a>
 						{/if}
 						<a
 							id="sources"
 							href="/sources"
-							class="icons hover:text-sources flex flex-col items-center justify-center w-full px-1 py-2"
-							class:text-sources={$page.url.pathname.startsWith('/sources')}
-							class:bg-coolgray-500={$page.url.pathname.startsWith('/sources')}
-							class:bg-coolgray-200={!$page.url.pathname.startsWith('/sources')}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6 flex-shrink-0"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								stroke="currentColor"
-								fill="none"
-								stroke-linecap="round"
-								stroke-linejoin="round"
+								class="icons hover:text-sources"
+								class:text-sources={$page.url.pathname.startsWith('/sources')}
+								class:bg-coolgray-500={$page.url.pathname.startsWith('/sources')}
+								class:bg-coolgray-200={!$page.url.pathname.startsWith('/sources')}
 							>
-								<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-								<circle cx="6" cy="6" r="2" />
-								<circle cx="18" cy="18" r="2" />
-								<path d="M11 6h5a2 2 0 0 1 2 2v8" />
-								<polyline points="14 9 11 6 14 3" />
-								<path d="M13 18h-5a2 2 0 0 1 -2 -2v-8" />
-								<polyline points="10 15 13 18 10 21" />
-							</svg>
-							<span style="font-size:9px;line-height:1.2;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Sources</span>
-						</a>
-						<a
-							id="destinations"
-							href="/destinations"
-							class="icons hover:text-destinations flex flex-col items-center justify-center w-full px-1 py-2"
-							class:text-destinations={$page.url.pathname.startsWith('/destinations')}
-							class:bg-coolgray-500={$page.url.pathname.startsWith('/destinations')}
-							class:bg-coolgray-200={!$page.url.pathname.startsWith('/destinations')}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								class="h-6 w-6 flex-shrink-0"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								stroke="currentColor"
-								fill="none"
-								stroke-linecap="round"
-								stroke-linejoin="round"
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-8 w-8"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									fill="none"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+									<circle cx="6" cy="6" r="2" />
+									<circle cx="18" cy="18" r="2" />
+									<path d="M11 6h5a2 2 0 0 1 2 2v8" />
+									<polyline points="14 9 11 6 14 3" />
+									<path d="M13 18h-5a2 2 0 0 1 -2 -2v-8" />
+									<polyline points="10 15 13 18 10 21" />
+								</svg>
+							</a>
+							<a
+								id="destinations"
+								href="/destinations"
+								class="icons hover:text-destinations"
+								class:text-destinations={$page.url.pathname.startsWith('/destinations')}
+								class:bg-coolgray-500={$page.url.pathname.startsWith('/destinations')}
+								class:bg-coolgray-200={!$page.url.pathname.startsWith('/destinations')}
 							>
-								<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-								<path
-									d="M22 12.54c-1.804 -.345 -2.701 -1.08 -3.523 -2.94c-.487 .696 -1.102 1.568 -.92 2.4c.028 .238 -.32 1.002 -.557 1h-14c0 5.208 3.164 7 6.196 7c4.124 .022 7.828 -1.376 9.854 -5c1.146 -.101 2.296 -1.505 2.95 -2.46z"
-								/>
-								<path d="M5 10h3v3h-3z" />
-								<path d="M8 10h3v3h-3z" />
-								<path d="M11 10h3v3h-3z" />
-								<path d="M8 7h3v3h-3z" />
-								<path d="M11 7h3v3h-3z" />
-								<path d="M11 4h3v3h-3z" />
-								<path d="M4.571 18c1.5 0 2.047 -.074 2.958 -.78" />
-								<line x1="10" y1="16" x2="10" y2="16.01" />
-							</svg>
-							<span style="font-size:9px;line-height:1.2;text-align:center;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Dest.</span>
-						</a>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-8 w-8"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									fill="none"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+									<path
+										d="M22 12.54c-1.804 -.345 -2.701 -1.08 -3.523 -2.94c-.487 .696 -1.102 1.568 -.92 2.4c.028 .238 -.32 1.002 -.557 1h-14c0 5.208 3.164 7 6.196 7c4.124 .022 7.828 -1.376 9.854 -5c1.146 -.101 2.296 -1.505 2.95 -2.46z"
+									/>
+									<path d="M5 10h3v3h-3z" />
+									<path d="M8 10h3v3h-3z" />
+									<path d="M11 10h3v3h-3z" />
+									<path d="M8 7h3v3h-3z" />
+									<path d="M11 7h3v3h-3z" />
+									<path d="M11 4h3v3h-3z" />
+									<path d="M4.571 18c1.5 0 2.047 -.074 2.958 -.78" />
+									<line x1="10" y1="16" x2="10" y2="16.01" />
+								</svg>
+							</a>
 					</div>
 					<div class="flex-1" />
 					<div class="lg:block hidden">
