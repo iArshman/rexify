@@ -238,11 +238,10 @@
 							id="sources"
 							href="/sources"
 							class="icons hover:text-sources flex flex-col items-center gap-1"
-								class="icons hover:text-sources"
-								class:text-sources={$page.url.pathname.startsWith('/sources')}
-								class:bg-coolgray-500={$page.url.pathname.startsWith('/sources')}
-								class:bg-coolgray-200={!$page.url.pathname.startsWith('/sources')}
-							>
+							class:text-sources={$page.url.pathname.startsWith('/sources')}
+							class:bg-coolgray-500={$page.url.pathname.startsWith('/sources')}
+							class:bg-coolgray-200={!$page.url.pathname.startsWith('/sources')}
+						>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									class="h-8 w-8"
