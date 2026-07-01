@@ -91,6 +91,17 @@ export async function newDestination(request: FastifyRequest<NewDestination>, re
 		let { name, network, engine, isCoolifyProxyUsed, remoteIpAddress, remoteUser, remotePort } =
 			request.body;
 		if (id === 'new') {
+			if (teamId !== '0') {
+				const existing = await prisma.destinationDocker.count({
+					where: { teams: { some: { id: teamId } } }
+				});
+				if (existing > 0) {
+					throw {
+						status: 400,
+						message: `Your team is only allowed to have one destination.`
+					};
+				}
+			}
 			if (engine) {
 				const { stdout } = await await executeCommand({
 					command: `docker network ls --filter 'name=^${network}$' --format '{{json .}}'`

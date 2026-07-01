@@ -28,6 +28,7 @@ import {
 	version
 } from './lib/common';
 import { checkContainer } from './lib/docker';
+import { refreshAllStatuses } from './lib/statusCache';
 import { scheduler } from './lib/scheduler';
 import { verifyRemoteDockerEngineFn } from './routes/api/v1/destinations/handlers';
 import { refreshTags, refreshTemplates } from './routes/api/v1/handlers';
@@ -179,6 +180,12 @@ const host = '0.0.0.0';
 			await cleanupStuckedContainers();
 		}, 60000);
 
+		// Periodically refresh the cached container statuses so the dashboard
+		// can render them instantly instead of querying Docker on every load.
+		setInterval(async () => {
+			await refreshAllStatuses();
+		}, 30000);
+
 		// checkProxies, checkFluentBit & refresh templates
 		setInterval(async () => {
 			await checkProxies();
@@ -211,7 +218,8 @@ const host = '0.0.0.0';
 			getIPAddress(),
 			configureRemoteDockers(),
 			refreshTemplates(),
-			refreshTags()
+			refreshTags(),
+			refreshAllStatuses()
 			// cleanupStuckedContainers()
 		]);
 	} catch (error) {

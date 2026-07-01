@@ -22,7 +22,10 @@
 	let loading = false;
 	let emailEl: HTMLInputElement;
 	let passwordEl: HTMLInputElement;
-	let email: string | undefined, password: string, passwordCheck: string;
+	let email: string | undefined,
+		password: string,
+		passwordCheck: string,
+		name: string | undefined;
 
 	onMount(() => {
 		email = $loginEmail;
@@ -44,6 +47,7 @@
 			const { token, payload } = await post(`/login`, {
 				email: email?.toLowerCase(),
 				password,
+				name,
 				isLogin: false
 			});
 			Cookies.set('token', token, {
@@ -114,6 +118,15 @@
 				<h5>Enter the required fields to complete the registration.</h5>
 			</div>
 			<form on:submit|preventDefault={handleSubmit} class="flex flex-col py-4 space-y-3 w-full">
+				<input
+					type="text"
+					name="name"
+					placeholder="Name (used for your team)"
+					autocomplete="off"
+					required
+					bind:value={name}
+					class="w-full"
+				/>
 				<input
 					type="email"
 					name="email"

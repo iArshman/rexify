@@ -1,19 +1,47 @@
 <script lang="ts">
 	import cuid from 'cuid';
 	import { t } from '$lib/translations';
+	import { get } from '$lib/api';
+	import { appSession } from '$lib/store';
 	import NewLocalDocker from './_NewLocalDocker.svelte';
 	import NewRemoteDocker from './_NewRemoteDocker.svelte';
 	let payload = {};
 	let selected = 'localDocker';
-	function setPredefined(type: any) {
+
+	// Build a valid Docker network name from the current team's name.
+	// Docker network names must match [a-zA-Z0-9][a-zA-Z0-9_.-]*
+	function sanitizeNetworkName(name: string) {
+		const sanitized = name
+			.toLowerCase()
+			.trim()
+			.replace(/[^a-z0-9_.-]+/g, '-')
+			.replace(/^[-_.]+/, '')
+			.replace(/[-_.]+$/, '');
+		return sanitized || cuid();
+	}
+
+	async function getDefaultNetwork() {
+		try {
+			const { team } = await get(`/iam/team/${$appSession.teamId}`);
+			if (team?.name) {
+				return sanitizeNetworkName(team.name);
+			}
+		} catch (error) {
+			// Fall back to a random network name if the team can't be loaded.
+		}
+		return cuid();
+	}
+
+	async function setPredefined(type: any) {
 		selected = type;
+		const network = await getDefaultNetwork();
 		switch (type) {
 			case 'localDocker':
 				payload = {
 					name: t.get('sources.local_docker'),
 					engine: '/var/run/docker.sock',
 					remoteEngine: false,
-					network: cuid(),
+					network,
 					isCoolifyProxyUsed: true
 				};
 				break;
@@ -24,7 +52,7 @@
 					remoteIpAddress: null,
 					remoteUser: 'root',
 					remotePort: 22,
-					network: cuid(),
+					network,
 					isCoolifyProxyUsed: true
 				};
 				break;

@@ -32,6 +32,12 @@
 	const { id } = $page.params;
 	let batchSecrets = '';
 
+	function viewSecretsInBatch() {
+		batchSecrets = secrets
+			.map((secret: any) => `${secret.name}=${secret.value}`)
+			.join('\n');
+	}
+
 	async function refreshSecrets() {
 		const data = await get(`/services/${id}/secrets`);
 		secrets = [...data.secrets];
@@ -104,6 +110,12 @@
 				<div class="flex flex-row space-x-2">
 					<div class="title font-bold pb-3 ">Paste <code>.env</code> file</div>
 					<button type="submit" class="btn btn-sm bg-primary">Add Secrets in Batch</button>
+					<button
+						type="button"
+						class="btn btn-sm"
+						disabled={secrets.length === 0}
+						on:click={viewSecretsInBatch}>Batch View</button
+					>
 				</div>
 			</div>
 

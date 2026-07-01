@@ -15,6 +15,7 @@ import {
 	executeCommand
 } from '../../../lib/common';
 import { scheduler } from '../../../lib/scheduler';
+import { getAllCachedStatuses } from '../../../lib/statusCache';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { Login, Update } from '.';
 import type { GetCurrentUser } from './types';
@@ -243,6 +244,18 @@ export async function showDashboard(request: FastifyRequest) {
 				foundUnconfiguredDatabase = true;
 			}
 		}
+		// Attach the cached container status (computed by the background job) so
+		// the dashboard can render it instantly without a live Docker check.
+		const cachedStatuses = getAllCachedStatuses();
+		for (const application of applications) {
+			(application as any).cachedStatus = cachedStatuses[application.id] || null;
+		}
+		for (const service of services) {
+			(service as any).cachedStatus = cachedStatuses[service.id] || null;
+		}
+		for (const database of databases) {
+			(database as any).cachedStatus = cachedStatuses[database.id] || null;
+		}
 		return {
 			foundUnconfiguredApplication,
 			foundUnconfiguredDatabase,
@@ -263,7 +276,7 @@ export async function login(request: FastifyRequest<Login>, reply: FastifyReply)
 	if (request.user) {
 		return reply.redirect('/dashboard');
 	} else {
-		const { email, password, isLogin } = request.body || {};
+		const { email, password, isLogin, name } = request.body || {};
 		if (!email || !password) {
 			throw { status: 500, message: 'Email and password are required.' };
 		}
@@ -343,6 +356,7 @@ export async function login(request: FastifyRequest<Login>, reply: FastifyReply)
 				};
 			}
 			const hashedPassword = await hashPassword(password);
+			const teamName = name?.trim() || uniqueName();
 			if (users === 0) {
 				await prisma.user.create({
 					data: {
@@ -353,7 +367,7 @@ export async function login(request: FastifyRequest<Login>, reply: FastifyReply)
 						teams: {
 							create: {
 								id: uid,
-								name: uniqueName(),
+								name: teamName,
 								destinationDocker: { connect: { network: 'coolify' } }
 							}
 						},
@@ -371,7 +385,7 @@ export async function login(request: FastifyRequest<Login>, reply: FastifyReply)
 						teams: {
 							create: {
 								id: uid,
-								name: uniqueName()
+								name: teamName
 							}
 						},
 						permission: { create: { teamId: uid, permission: 'owner' } }

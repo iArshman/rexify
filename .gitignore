@@ -23,3 +23,7 @@ backups/*
 # Trpc
 apps/server/db/*.db
 apps/server/db/*.db-journal
+
+# Reference material (Coolify v4 source, not part of this project)
+coolify-4/
+coolify-4.x.zip

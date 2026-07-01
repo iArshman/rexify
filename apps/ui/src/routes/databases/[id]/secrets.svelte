@@ -33,6 +33,13 @@
 	const { id } = $page.params;
 
 	let batchSecrets = '';
+
+	function viewSecretsInBatch() {
+		batchSecrets = secrets
+			.map((secret: any) => `${secret.name}=${secret.value}`)
+			.join('\n');
+	}
+
 	async function refreshSecrets() {
 		const data = await get(`/databases/${id}/secrets`);
 		secrets = [...data.secrets];
@@ -104,6 +111,14 @@
 	<h2 class="title my-6 font-bold">Paste .env file</h2>
 	<form on:submit|preventDefault={getValues} class="mb-12 w-full">
 		<textarea bind:value={batchSecrets} class="mb-2 min-h-[200px] w-full" />
-		<button class="btn btn-sm bg-databases" type="submit">Batch add secrets</button>
+		<div class="flex flex-row space-x-2">
+			<button class="btn btn-sm bg-databases" type="submit">Batch add secrets</button>
+			<button
+				type="button"
+				class="btn btn-sm"
+				disabled={secrets.length === 0}
+				on:click={viewSecretsInBatch}>Batch View</button
+			>
+		</div>
 	</form>
 </div>

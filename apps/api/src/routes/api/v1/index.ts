@@ -6,7 +6,7 @@ export interface Update {
 	Body: { latestVersion: string }
 }
 export interface Login {
-	Body: { email: string, password: string, isLogin: boolean }
+	Body: { email: string, password: string, isLogin: boolean, name?: string }
 }
 
 const root: FastifyPluginAsync = async (fastify): Promise<void> => {
