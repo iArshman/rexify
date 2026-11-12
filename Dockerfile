@@ -17,8 +17,6 @@ RUN pnpm build
 FROM node:18-slim
 WORKDIR /app
 ENV NODE_ENV production
-ARG TARGETPLATFORM
-
 ARG DOCKER_VERSION=20.10.18
 ARG DOCKER_COMPOSE_VERSION=2.6.1
 ARG PACK_VERSION=0.27.0
@@ -29,10 +27,17 @@ RUN npm --no-update-notifier --no-fund --global install pnpm@${PNPM_VERSION}
 RUN npm install -g npm@${PNPM_VERSION}
 
 RUN mkdir -p ~/.docker/cli-plugins/
-RUN curl -SL https://cdn.coollabs.io/bin/$TARGETPLATFORM/docker-$DOCKER_VERSION -o /usr/bin/docker
-RUN curl -SL https://cdn.coollabs.io/bin/$TARGETPLATFORM/docker-compose-linux-$DOCKER_COMPOSE_VERSION -o ~/.docker/cli-plugins/docker-compose
-RUN curl -SL https://cdn.coollabs.io/bin/$TARGETPLATFORM/pack-$PACK_VERSION -o /usr/local/bin/pack
-RUN chmod +x ~/.docker/cli-plugins/docker-compose /usr/bin/docker /usr/local/bin/pack
+RUN machine="$(uname -m)" && \
+    case "$machine" in \
+      x86_64) docker_arch="x86_64"; compose_arch="x86_64" ;; \
+      aarch64) docker_arch="aarch64"; compose_arch="aarch64" ;; \
+      *) echo "Unsupported architecture: $machine" && exit 1 ;; \
+    esac && \
+    curl -fsSL "https://download.docker.com/linux/static/stable/${docker_arch}/docker-${DOCKER_VERSION}.tgz" -o /tmp/docker.tgz && \
+    tar -xzf /tmp/docker.tgz -C /tmp && install -m 0755 /tmp/docker/docker /usr/bin/docker && \
+    curl -fsSL "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${compose_arch}" -o ~/.docker/cli-plugins/docker-compose && \
+    chmod +x ~/.docker/cli-plugins/docker-compose && \
+    rm -rf /tmp/docker /tmp/docker.tgz
 
 COPY --from=build /app/apps/api/build/ .
 COPY --from=build /app/apps/ui/build/ ./public
