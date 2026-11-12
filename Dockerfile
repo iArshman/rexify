@@ -1,4 +1,4 @@
-ARG PNPM_VERSION=7.11.0
+ARG PNPM_VERSION=10.6.5
 
 FROM node:18-slim as build
 WORKDIR /app
@@ -7,7 +7,7 @@ RUN apt update && apt -y install --no-install-recommends curl python3 make g++ c
 RUN npm --no-update-notifier --no-fund --global install pnpm@${PNPM_VERSION}
 
 COPY . .
-RUN pnpm install
+RUN pnpm install --config.dangerouslyAllowAllBuilds=true
 RUN mkdir -p /app/apps/api/node_modules/.pnpm/node-pty@1.1.0/node_modules/node-pty/build/Release && \
     cp /app/apps/api/node_modules/.ignored/node-pty/build/Release/pty.node \
        /app/apps/api/node_modules/.pnpm/node-pty@1.1.0/node_modules/node-pty/build/Release/pty.node 2>/dev/null || true
@@ -42,7 +42,7 @@ COPY --from=build /app/docker-compose.yaml .
 COPY --from=build /app/apps/api/tags.json .
 COPY --from=build /app/apps/api/templates.json .
 
-RUN pnpm install -p
+RUN pnpm install -p --config.dangerouslyAllowAllBuilds=true
 RUN cd /app/node_modules/.pnpm/node-pty@1.1.0/node_modules/node-pty && npm rebuild
 
 EXPOSE 3000

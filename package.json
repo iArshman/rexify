@@ -69,10 +69,5 @@
     "js-yaml": "4.1.0",
     "p-all": "4.0.0",
     "public-ip": "6.0.1"
-  },
-  "pnpm": {
-    "overrides": {
-      "postcss-selector-parser": "6.0.10"
-    }
   }
 }
