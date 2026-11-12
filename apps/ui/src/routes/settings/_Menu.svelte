@@ -27,8 +27,13 @@
 				</svg>Coolify Settings</a
 			>
 		</li>
-	{/if}
-	<li class="rounded" class:bg-coollabs={$page.url.pathname === `/settings/docker`}>
+		{/if}
+		{#if $appSession.teamId === '0'}
+			<li class="rounded" class:bg-coollabs={$page.url.pathname === `/settings/backups`}>
+				<a href={`/settings/backups`} class="no-underline w-full">Full Server Backups</a>
+			</li>
+		{/if}
+		<li class="rounded" class:bg-coollabs={$page.url.pathname === `/settings/docker`}>
 		<a href={`/settings/docker`} class="no-underline w-full">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

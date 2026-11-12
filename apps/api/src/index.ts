@@ -32,6 +32,7 @@ import { refreshAllStatuses } from './lib/statusCache';
 import { scheduler } from './lib/scheduler';
 import { verifyRemoteDockerEngineFn } from './routes/api/v1/destinations/handlers';
 import { refreshTags, refreshTemplates } from './routes/api/v1/handlers';
+import { startBackupScheduler } from './lib/backup';
 declare module 'fastify' {
 	interface FastifyInstance {
 		config: {
@@ -222,6 +223,7 @@ const host = '0.0.0.0';
 			refreshAllStatuses()
 			// cleanupStuckedContainers()
 		]);
+		startBackupScheduler();
 	} catch (error) {
 		console.error(error);
 		process.exit(1);

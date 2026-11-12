@@ -1,0 +1,11 @@
+ALTER TABLE "Setting" ADD COLUMN "backupEnabled" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Setting" ADD COLUMN "backupProvider" TEXT NOT NULL DEFAULT 'rclone';
+ALTER TABLE "Setting" ADD COLUMN "backupDestination" TEXT;
+ALTER TABLE "Setting" ADD COLUMN "backupRetentionRemote" INTEGER NOT NULL DEFAULT 7;
+ALTER TABLE "Setting" ADD COLUMN "backupRetentionLocal" INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE "Setting" ADD COLUMN "backupSchedule" TEXT;
+ALTER TABLE "Setting" ADD COLUMN "backupEncryptionKey" TEXT;
+ALTER TABLE "Setting" ADD COLUMN "backupLastStatus" TEXT;
+ALTER TABLE "Setting" ADD COLUMN "backupLastMessage" TEXT;
+ALTER TABLE "Setting" ADD COLUMN "backupLastAt" DATETIME;
+ALTER TABLE "Setting" ADD COLUMN "backupLastFile" TEXT;

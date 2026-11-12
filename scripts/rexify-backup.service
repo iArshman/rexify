@@ -1,0 +1,11 @@
+[Unit]
+Description=Rexify full encrypted backup
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/home/ubuntu/rexify
+EnvironmentFile=-/home/ubuntu/rexify/.backup.env
+ExecStart=/home/ubuntu/rexify/scripts/rexify-backup.sh --to ${REXIFY_BACKUP_DESTINATION} --key-file ${REXIFY_BACKUP_KEY_FILE} --keep-remote ${REXIFY_BACKUP_KEEP_REMOTE} --keep-local ${REXIFY_BACKUP_KEEP_LOCAL}

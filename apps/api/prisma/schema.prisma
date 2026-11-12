@@ -40,6 +40,25 @@ model Setting {
   isAutoUpdateEnabled                     Boolean  @default(false)
   isDNSCheckEnabled                       Boolean  @default(true)
   isTraefikUsed                           Boolean  @default(true)
+  backupEnabled                            Boolean  @default(false)
+  backupProvider                           String   @default("rclone")
+  backupDestination                        String?
+  backupRetentionRemote                    Int      @default(7)
+  backupRetentionLocal                     Int      @default(1)
+  backupSchedule                           String?
+  backupEncryptionKey                      String?
+  backupLastStatus                         String?
+  backupLastMessage                        String?
+  backupLastAt                             DateTime?
+  backupLastFile                           String?
+  backupGoogleClientId                     String?
+  backupGoogleClientSecret                 String?
+  backupGoogleRefreshToken                 String?
+  backupGoogleAccessToken                  String?
+  backupGoogleTokenExpiry                  DateTime?
+  backupGoogleEmail                        String?
+  backupGoogleOAuthState                   String?
+  backupServiceAccountJson                 String?
   createdAt                               DateTime @default(now())
   updatedAt                               DateTime @updatedAt
 }

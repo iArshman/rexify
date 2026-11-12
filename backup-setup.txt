@@ -1,0 +1,239 @@
+REXIFY COMPLETE GOOGLE DRIVE BACKUP SETUP
+==========================================
+
+1. Google Drive rclone setup
+----------------------------
+
+Install rclone on the Rexify host:
+
+  sudo apt-get update
+  sudo apt-get install -y rclone
+
+Start configuration:
+
+  sudo rclone config
+
+Create a new remote:
+
+  n        (New remote)
+  name     gdrive
+  Storage  drive
+
+If rclone shows a URL similar to:
+
+  http://127.0.0.1:53682/auth?state=...
+
+it is waiting for OAuth authorization in a browser.
+
+Option A: configure on the same computer
+-----------------------------------------
+
+Open the shown URL in a browser on the same computer where rclone is running.
+Approve Google Drive access, then return to the terminal.
+
+Option B: configure on a server without a graphical browser
+------------------------------------------------------------
+
+When rclone asks whether to use an auto config, answer:
+
+  n
+
+On a computer that has a browser and rclone installed, run:
+
+  rclone authorize drive
+
+Complete Google authorization in the browser. rclone will print a token.
+Copy that token back into the server terminal when requested.
+
+Another option is to run rclone config on your own computer, then copy the
+resulting configuration file to the server:
+
+  mkdir -p ~/.config/rclone
+  scp ~/.config/rclone/rclone.conf root@YOUR_SERVER:/root/.config/rclone/rclone.conf
+
+Test the remote:
+
+  sudo rclone lsd gdrive:
+
+2. What must be preserved for migration
+----------------------------------------
+
+For a complete new-server restore, preserve ALL of the following:
+
+  A. Rexify .env file
+     Contains the Rexify secret key and database configuration.
+     This is essential for decrypting stored Rexify secrets.
+
+  B. Rexify control-plane database
+     Contains applications, services, databases, domains, settings, and secrets.
+
+  C. Docker named volumes
+     Contains database data, logs, certificates, proxy state, and persistent data.
+
+  D. Docker bind-mounted host directories
+     These may contain application files and persistent application data.
+
+  E. rclone configuration
+     Usually:
+
+       /root/.config/rclone/rclone.conf
+
+     This contains the Google Drive remote name, OAuth token, client ID, and
+     other rclone settings.
+
+  F. Google service-account JSON, only if you use a service account
+     The JSON is not required for normal Google Drive OAuth setup.
+
+  G. Backup encryption key
+     Example:
+
+       /root/rexify-backup.key
+
+     This key is separate from Google credentials and is required to decrypt
+     the backup archive. Keep it in a password manager or another offline place.
+
+3. Normal OAuth account versus service account
+-----------------------------------------------
+
+Normal personal Google account OAuth:
+
+  - Uses the browser authorization flow.
+  - Does NOT require a service-account JSON file.
+  - Requires rclone.conf and its token.
+  - Best choice for a personal Google Drive backup.
+
+Google service account:
+
+  - Requires a JSON service-account key file.
+  - The target Google Drive folder must be shared with the service-account email.
+  - rclone must be configured with service_account_file pointing to that JSON.
+  - The JSON file is a private credential and must be protected.
+
+For your personal Rexify server, normal OAuth is usually simpler. You do not
+need to create or upload a service-account JSON file unless you specifically
+choose service-account authentication.
+
+For dashboard OAuth, add this exact redirect URI to your Google OAuth client:
+
+  https://YOUR_REXIFY_DOMAIN/api/v1/backups/google/callback
+
+If using local HTTP:
+
+  http://YOUR_SERVER_IP:3000/api/v1/backups/google/callback
+
+Set PUBLIC_URL to the same public Rexify URL in the Rexify .env file when the
+server is behind a domain or reverse proxy.
+
+4. Configure Rexify backup
+---------------------------
+
+Create the external recovery key. Do not store the only copy on the server:
+
+  sudo openssl rand -base64 48 | sudo tee /root/rexify-backup.key
+  sudo chmod 600 /root/rexify-backup.key
+
+Create the timer configuration:
+
+  cd /home/ubuntu/rexify
+  sudo cp .backup.env.example .backup.env
+  sudo nano .backup.env
+  sudo chmod 600 .backup.env
+
+Use:
+
+  REXIFY_BACKUP_DESTINATION=gdrive:rexify-backups
+  REXIFY_BACKUP_KEY_FILE=/root/rexify-backup.key
+  REXIFY_BACKUP_KEEP_REMOTE=7
+  REXIFY_BACKUP_KEEP_LOCAL=1
+
+5. Run a full backup
+--------------------
+
+  cd /home/ubuntu/rexify
+  sudo ./scripts/rexify-backup.sh \
+    --to gdrive:rexify-backups \
+    --key-file /root/rexify-backup.key \
+    --keep-remote 7 \
+    --keep-local 1
+
+The backup includes:
+
+  - Rexify source and configuration
+  - .env
+  - control-plane SQLite database
+  - all Docker named volumes
+  - Docker bind-mounted directories
+  - SSL and proxy state inside volumes
+  - Docker metadata
+  - SHA-256 checksum
+  - encrypted archive
+
+To also save Docker images:
+
+  sudo ./scripts/rexify-backup.sh \
+    --to gdrive:rexify-backups \
+    --key-file /root/rexify-backup.key \
+    --images
+
+6. Enable daily automatic backup
+--------------------------------
+
+  cd /home/ubuntu/rexify
+  sudo ./scripts/install-rexify-backup-timer.sh
+
+Check the timer:
+
+  systemctl status rexify-backup.timer
+  systemctl list-timers rexify-backup.timer
+
+Run the service manually:
+
+  sudo systemctl start rexify-backup.service
+  journalctl -u rexify-backup.service -n 100 --no-pager
+
+7. New-server restore
+---------------------
+
+Install Docker, rclone, and configure the gdrive remote first.
+The rclone configuration is needed to download the encrypted backup.
+
+Download the backup:
+
+  sudo mkdir -p /root/rexify-recovery
+  sudo rclone copy gdrive:rexify-backups /root/rexify-recovery \
+    --include '*.tar.gz.age*'
+
+Restore while Rexify is stopped:
+
+  sudo ./scripts/rexify-restore.sh \
+    /root/rexify-recovery/rexify-full-HOST-TIMESTAMP.tar.gz.age \
+    /root/rexify-backup.key \
+    /home/ubuntu/rexify
+
+After restore, point DNS records to the new server IP.
+
+8. Important security rules
+---------------------------
+
+  - Never publish rclone.conf.
+  - Never publish a service-account JSON file.
+  - Never upload the encryption key beside the backup.
+  - Keep at least one copy of the encryption key outside Google Drive.
+  - Keep a copy of rclone.conf and service JSON outside the server if they are
+    needed for disaster recovery.
+  - The encrypted archive can contain passwords, tokens, private keys, database
+    contents, certificates, and the Rexify .env file.
+
+SHORT ANSWER
+------------
+
+For normal personal Google Drive OAuth, you need the rclone configuration file
+(rclone.conf) and its OAuth token. You do NOT need a service-account JSON file.
+
+If you intentionally use a service account, then you need BOTH:
+
+  - rclone.conf
+  - the service-account JSON file referenced by rclone.conf
+
+The backup encryption key is a separate third item and is always required for
+restoring the encrypted archive.

@@ -23,7 +23,7 @@ ARG DOCKER_VERSION=20.10.18
 ARG DOCKER_COMPOSE_VERSION=2.6.1
 ARG PACK_VERSION=0.27.0
 
-RUN apt update && apt -y install --no-install-recommends ca-certificates git git-lfs openssh-client curl jq cmake sqlite3 openssl psmisc python3 vim make g++
+RUN apt update && apt -y install --no-install-recommends ca-certificates git git-lfs openssh-client curl jq cmake sqlite3 openssl rclone psmisc python3 vim make g++
 RUN apt-get clean autoclean && apt-get autoremove --yes && rm -rf /var/lib/{apt,dpkg,cache,log}/
 RUN npm --no-update-notifier --no-fund --global install pnpm@${PNPM_VERSION}
 RUN npm install -g npm@${PNPM_VERSION}

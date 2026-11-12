@@ -57,6 +57,10 @@ docker compose restart
 docker ps
 ```
 
+## Full server backups
+
+Rexify includes encrypted disaster-recovery backups for Google Drive and other rclone destinations. See [docs/full-backups.md](docs/full-backups.md) for setup, scheduling, verification, and restoring onto a new server.
+
 ---
 
 ## Updating Your Code
@@ -117,5 +121,4 @@ docker compose logs --tail=100 -f coolify
 ```
 
 ---
-
 

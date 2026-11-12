@@ -9,6 +9,8 @@ services:
         protocol: tcp
         mode: host
     volumes:
+      - '${COOLIFY_REPO_DIR:-.}:/app/rexify-source:ro'
+      - '${RCLONE_CONFIG_DIR:-/root/.config/rclone}:/root/.config/rclone:ro'
       - 'coolify-local-backup:/app/backups'
       - 'coolify-db:/app/db'
       - 'coolify-logs:/app/logs'
@@ -51,4 +53,3 @@ volumes:
   coolify-traefik-letsencrypt:
     name: coolify-traefik-letsencrypt
     external: true
-
