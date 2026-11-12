@@ -3,8 +3,8 @@ import fsSync from 'fs';
 import path from 'path';
 import os from 'os';
 import crypto from 'crypto';
-import { execa } from 'execa';
-import got from 'got';
+import { execFile as execFileCallback } from 'child_process';
+import { promisify } from 'util';
 import { decrypt, encrypt, prisma } from './common';
 
 const BACKUP_ROOT = process.env.REXIFY_BACKUP_ROOT || '/app/backups';
@@ -13,6 +13,7 @@ const LOCK_FILE = path.join(BACKUP_ROOT, '.rexify-backup.lock');
 const SOURCE_ROOT = '/app/rexify-source';
 const VOLUME_ARCHIVE_IMAGE = process.env.REXIFY_BACKUP_VOLUME_IMAGE || 'alpine:3.19';
 const RCLONE_CONFIG_FILE = process.env.REXIFY_RCLONE_CONFIG || path.join(BACKUP_ROOT, '.rclone', 'rclone.conf');
+const execFile = promisify(execFileCallback);
 
 export type BackupConfig = {
 	enabled: boolean;
@@ -35,7 +36,13 @@ let running = false;
 let lastScheduleKey = '';
 
 async function command(command: string, args: string[] = [], options: any = {}) {
-	return await execa(command, args, { reject: true, env: { ...process.env, RCLONE_CONFIG: RCLONE_CONFIG_FILE }, ...options });
+	return await execFile(command, args, { env: { ...process.env, RCLONE_CONFIG: RCLONE_CONFIG_FILE }, ...options });
+}
+
+async function jsonRequest(url: string, init: RequestInit) {
+	const response = await fetch(url, init);
+	if (!response.ok) throw new Error(`${response.status} ${await response.text()}`);
+	return await response.json();
 }
 
 async function exists(file: string) {
@@ -334,9 +341,9 @@ export async function completeGoogleOAuth(code: string, state: string) {
 	if (!settings?.backupGoogleOAuthState || state !== settings.backupGoogleOAuthState) throw new Error('Invalid or expired Google OAuth state.');
 	const redirect = process.env.REXIFY_GOOGLE_REDIRECT_URI || `${process.env.PUBLIC_URL || 'http://localhost:3000'}/api/v1/backups/google/callback`;
 	const secret = decrypt(settings.backupGoogleClientSecret);
-	const token: any = await got.post('https://oauth2.googleapis.com/token', { form: { code, client_id: settings.backupGoogleClientId, client_secret: secret, redirect_uri: redirect, grant_type: 'authorization_code' } }).json();
+	const token: any = await jsonRequest('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ code, client_id: settings.backupGoogleClientId, client_secret: secret, redirect_uri: redirect, grant_type: 'authorization_code' }) });
 	const access = token.access_token;
-	const profile: any = await got.get('https://www.googleapis.com/drive/v3/about', { searchParams: { fields: 'user(emailAddress)' }, headers: { authorization: `Bearer ${access}` } }).json();
+	const profile: any = await jsonRequest('https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)', { headers: { authorization: `Bearer ${access}` } });
 	await prisma.setting.update({ where: { id: '0' }, data: { backupGoogleAccessToken: encrypt(access), backupGoogleRefreshToken: token.refresh_token ? encrypt(token.refresh_token) : settings.backupGoogleRefreshToken, backupGoogleTokenExpiry: new Date(Date.now() + Number(token.expires_in || 3600) * 1000), backupGoogleEmail: profile.user?.emailAddress, backupGoogleOAuthState: null, backupProvider: 'rclone' } as any });
 	const updated: any = await prisma.setting.findUnique({ where: { id: '0' } });
 	await writeRcloneConfig(updated);
