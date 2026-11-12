@@ -42,7 +42,7 @@ COPY --from=build /app/docker-compose.yaml .
 COPY --from=build /app/apps/api/tags.json .
 COPY --from=build /app/apps/api/templates.json .
 
-RUN pnpm install -p --config.dangerouslyAllowAllBuilds=true
+RUN pnpm install --prod --config.dangerouslyAllowAllBuilds=true
 RUN cd /app/node_modules/.pnpm/node-pty@1.1.0/node_modules/node-pty && npm rebuild
 
 EXPOSE 3000
